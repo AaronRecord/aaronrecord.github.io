@@ -8,7 +8,6 @@
 	<link rel="icon"
 		href="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSItMi40IC0yLjQgMjguODAgMjguODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgaWQ9IlNWR1JlcG9fYmdDYXJyaWVyIiBzdHJva2Utd2lkdGg9IjAiPjxyZWN0IHg9Ii0yLjQiIHk9Ii0yLjQiIHdpZHRoPSIyOC44MCIgaGVpZ2h0PSIyOC44MCIgcng9IjE0LjQiIGZpbGw9IiM1MjY4MjkiIHN0cm9rZXdpZHRoPSIwIj48L3JlY3Q+PC9nPjxnIGlkPSJTVkdSZXBvX3RyYWNlckNhcnJpZXIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PC9nPjxnIGlkPSJTVkdSZXBvX2ljb25DYXJyaWVyIj4gPHBhdGggZD0iTTIwLjU4IDE5LjM3TDE3LjU5IDExLjAxQzE3LjM4IDEwLjQ2IDE2LjkxIDEwLjEyIDE2LjM3IDEwLjEyQzE1LjgzIDEwLjEyIDE1LjM3IDEwLjQ2IDE1LjE0IDExLjAzTDEyLjE2IDE5LjM3QzEyLjAyIDE5Ljc2IDEyLjIyIDIwLjE5IDEyLjYxIDIwLjMzQzEzIDIwLjQ3IDEzLjQzIDIwLjI3IDEzLjU3IDE5Ljg4TDE0LjE5IDE4LjE1SDE4LjU0TDE5LjE2IDE5Ljg4QzE5LjI3IDIwLjE5IDE5LjU2IDIwLjM4IDE5Ljg3IDIwLjM4QzE5Ljk1IDIwLjM4IDIwLjA0IDIwLjM3IDIwLjEyIDIwLjM0QzIwLjUxIDIwLjIgMjAuNzEgMTkuNzcgMjAuNTcgMTkuMzhMMjAuNTggMTkuMzdaTTE0Ljc0IDE2LjY0TDE2LjM4IDEyLjA1TDE4LjAyIDE2LjY0SDE0Ljc0Wk0xMi4xOSA3Ljg1QzkuOTI5OTkgMTEuNDIgNy44OSAxMy41OCA1LjQxIDE1LjAyQzUuMjkgMTUuMDkgNS4xNiAxNS4xMiA1LjA0IDE1LjEyQzQuNzggMTUuMTIgNC41MyAxNC45OSA0LjM5IDE0Ljc1QzQuMTggMTQuMzkgNC4zIDEzLjkzIDQuNjYgMTMuNzNDNi43NTk5OSAxMi41MSA4LjQ4IDEwLjc2IDEwLjQxIDcuODZINC4xMkMzLjcxIDcuODYgMy4zNyA3LjUyIDMuMzcgNy4xMUMzLjM3IDYuNyAzLjcxIDYuMzYgNC4xMiA2LjM2SDcuODdWNC4zOEM3Ljg3IDMuOTcgOC4yMSAzLjYzIDguNjIgMy42M0M5LjAyOTk5IDMuNjMgOS4zNyAzLjk3IDkuMzcgNC4zOFY2LjM2SDEzLjEyQzEzLjUzIDYuMzYgMTMuODcgNi43IDEzLjg3IDcuMTFDMTMuODcgNy41MiAxMy41MyA3Ljg2IDEzLjEyIDcuODZIMTIuMThMMTIuMTkgNy44NVpNMTIuMjMgMTUuMTJDMTIuMSAxNS4xMiAxMS45NyAxNS4wOSAxMS44NSAxNS4wMkMxMS4yIDE0LjY0IDEwLjU3IDE0LjIyIDkuOTc5OTkgMTMuNzhDOS42NDk5OSAxMy41MyA5LjU4IDEzLjA2IDkuODMgMTIuNzNDMTAuMDggMTIuNCAxMC41NSAxMi4zMyAxMC44OCAxMi41OEMxMS40MiAxMi45OSAxMi4wMSAxMy4zNyAxMi42MSAxMy43MkMxMi45NyAxMy45MyAxMy4wOSAxNC4zOSAxMi44OCAxNC43NUMxMi43NCAxNC45OSAxMi40OSAxNS4xMiAxMi4yMyAxNS4xMloiIGZpbGw9IiNGRkZGRkYiPjwvcGF0aD4gPC9nPjwvc3ZnPg==">
 
-
 	<script>
 		const VERSION = "1";
 		if ((localStorage.getItem("version") ?? "") !== VERSION) {
@@ -177,6 +176,8 @@
 			padding: 0;
 			display: grid;
 			background: var(--background-color);
+			max-height: 100dvh;
+			min-height: 100dvh;
 		}
 
 		.body>* {
@@ -185,11 +186,10 @@
 		}
 
 		.verse-page {
-			height: 100%;
 			display: flex;
 			flex-flow: column;
-			min-height: 100vh;
-			max-height: 100vh;
+			max-height: 100dvh;
+			min-height: 100dvh;
 		}
 
 		select,
@@ -287,7 +287,8 @@
 			position: absolute;
 			display: flex;
 			flex-direction: column;
-			z-index: 3;
+			max-height: 100dvh;
+			min-height: 100dvh;
 		}
 
 		.bookmark-scroll {
@@ -306,7 +307,7 @@
 </head>
 
 <body>
-	<div class="verse-page">
+	<div class="verse-page" id="verse-page">
 		<div class="navigator">
 			<div style="display:flex; align-items: center;">
 				<select style="flex-grow: 1" id="language1-select" onchange="languageSelected()">
@@ -366,6 +367,7 @@
 			language1Select.innerHTML += `<option value="${languageTag}">${language.name}</option>\n`;
 		}
 
+		let versePage = document.getElementById("verse-page");
 		let bookSelect = document.getElementById("book-select");
 		let chapterSelect = document.getElementById("chapter-select");
 		let verseSelect = document.getElementById("verse-select");
@@ -591,10 +593,12 @@
 
 		function openBookmarkPage() {
 			bookmarkPage.style.visibility = "visible";
+			versePage.style.visibility = "hidden";
 		}
 
 		function closeBookmarkPage() {
 			bookmarkPage.style.visibility = "hidden";
+			versePage.style.visibility = "visible";
 		}
 
 		function fetchBookmarks() {
