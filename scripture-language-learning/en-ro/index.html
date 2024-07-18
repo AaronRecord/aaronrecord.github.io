@@ -9,11 +9,29 @@
 		href="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSItMi40IC0yLjQgMjguODAgMjguODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgaWQ9IlNWR1JlcG9fYmdDYXJyaWVyIiBzdHJva2Utd2lkdGg9IjAiPjxyZWN0IHg9Ii0yLjQiIHk9Ii0yLjQiIHdpZHRoPSIyOC44MCIgaGVpZ2h0PSIyOC44MCIgcng9IjE0LjQiIGZpbGw9IiM1MjY4MjkiIHN0cm9rZXdpZHRoPSIwIj48L3JlY3Q+PC9nPjxnIGlkPSJTVkdSZXBvX3RyYWNlckNhcnJpZXIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PC9nPjxnIGlkPSJTVkdSZXBvX2ljb25DYXJyaWVyIj4gPHBhdGggZD0iTTIwLjU4IDE5LjM3TDE3LjU5IDExLjAxQzE3LjM4IDEwLjQ2IDE2LjkxIDEwLjEyIDE2LjM3IDEwLjEyQzE1LjgzIDEwLjEyIDE1LjM3IDEwLjQ2IDE1LjE0IDExLjAzTDEyLjE2IDE5LjM3QzEyLjAyIDE5Ljc2IDEyLjIyIDIwLjE5IDEyLjYxIDIwLjMzQzEzIDIwLjQ3IDEzLjQzIDIwLjI3IDEzLjU3IDE5Ljg4TDE0LjE5IDE4LjE1SDE4LjU0TDE5LjE2IDE5Ljg4QzE5LjI3IDIwLjE5IDE5LjU2IDIwLjM4IDE5Ljg3IDIwLjM4QzE5Ljk1IDIwLjM4IDIwLjA0IDIwLjM3IDIwLjEyIDIwLjM0QzIwLjUxIDIwLjIgMjAuNzEgMTkuNzcgMjAuNTcgMTkuMzhMMjAuNTggMTkuMzdaTTE0Ljc0IDE2LjY0TDE2LjM4IDEyLjA1TDE4LjAyIDE2LjY0SDE0Ljc0Wk0xMi4xOSA3Ljg1QzkuOTI5OTkgMTEuNDIgNy44OSAxMy41OCA1LjQxIDE1LjAyQzUuMjkgMTUuMDkgNS4xNiAxNS4xMiA1LjA0IDE1LjEyQzQuNzggMTUuMTIgNC41MyAxNC45OSA0LjM5IDE0Ljc1QzQuMTggMTQuMzkgNC4zIDEzLjkzIDQuNjYgMTMuNzNDNi43NTk5OSAxMi41MSA4LjQ4IDEwLjc2IDEwLjQxIDcuODZINC4xMkMzLjcxIDcuODYgMy4zNyA3LjUyIDMuMzcgNy4xMUMzLjM3IDYuNyAzLjcxIDYuMzYgNC4xMiA2LjM2SDcuODdWNC4zOEM3Ljg3IDMuOTcgOC4yMSAzLjYzIDguNjIgMy42M0M5LjAyOTk5IDMuNjMgOS4zNyAzLjk3IDkuMzcgNC4zOFY2LjM2SDEzLjEyQzEzLjUzIDYuMzYgMTMuODcgNi43IDEzLjg3IDcuMTFDMTMuODcgNy41MiAxMy41MyA3Ljg2IDEzLjEyIDcuODZIMTIuMThMMTIuMTkgNy44NVpNMTIuMjMgMTUuMTJDMTIuMSAxNS4xMiAxMS45NyAxNS4wOSAxMS44NSAxNS4wMkMxMS4yIDE0LjY0IDEwLjU3IDE0LjIyIDkuOTc5OTkgMTMuNzhDOS42NDk5OSAxMy41MyA5LjU4IDEzLjA2IDkuODMgMTIuNzNDMTAuMDggMTIuNCAxMC41NSAxMi4zMyAxMC44OCAxMi41OEMxMS40MiAxMi45OSAxMi4wMSAxMy4zNyAxMi42MSAxMy43MkMxMi45NyAxMy45MyAxMy4wOSAxNC4zOSAxMi44OCAxNC43NUMxMi43NCAxNC45OSAxMi40OSAxNS4xMiAxMi4yMyAxNS4xMloiIGZpbGw9IiNGRkZGRkYiPjwvcGF0aD4gPC9nPjwvc3ZnPg==">
 
 	<script>
-		const VERSION = "1";
-		if ((localStorage.getItem("version") ?? "") !== VERSION) {
-			localStorage.clear();
+		const localStorageId = location.pathname;
+		function getData(key) {
+			return localStorage.getItem(`${localStorageId}/${key}`);
 		}
-		localStorage.setItem("version", VERSION);
+
+		function saveData(key, value) {
+			localStorage.setItem(`${localStorageId}/${key}`, value);
+		}
+
+		function clearData() {
+			for (i = 0; i < localStorage.length; i++) {
+				key = localStorage.key(i);
+				if (localStorage.getItem(key).startsWith(localStorageId)) {
+					localStorage.removeItem(key);
+				}
+			}
+		}
+
+		const VERSION = "1";
+		if ((getData("version") ?? "") !== VERSION) {
+			clearData();
+		}
+		saveData("version", VERSION);
 
 		const BACKGROUND_COLOR_SETS = [
 			{
@@ -117,8 +135,8 @@
 			},
 		];
 
-		let backgroundColorSetIndex = parseInt(localStorage.getItem("backgroundColorSetIndex") ?? "0");
-		let accentColorSetIndex = parseInt(localStorage.getItem("accentColorSetIndex") ?? "0");
+		let backgroundColorSetIndex = parseInt(getData("backgroundColorSetIndex") ?? "0");
+		let accentColorSetIndex = parseInt(getData("accentColorSetIndex") ?? "0");
 		applyTheme();
 
 		function nextBackgroundColorSet() {
@@ -127,7 +145,7 @@
 			} else {
 				backgroundColorSetIndex++;
 			}
-			localStorage.setItem("backgroundColorSetIndex", backgroundColorSetIndex.toString());
+			saveData("backgroundColorSetIndex", backgroundColorSetIndex.toString());
 
 			applyTheme();
 		}
@@ -138,7 +156,7 @@
 			} else {
 				accentColorSetIndex++;
 			}
-			localStorage.setItem("accentColorSetIndex", accentColorSetIndex.toString());
+			saveData("accentColorSetIndex", accentColorSetIndex.toString());
 
 			applyTheme();
 		}
@@ -163,11 +181,11 @@
 	</script>
 	<style>
 		:root {
-			--line-height: 50px;
-			--line-offset: 25px;
+			--normal-line-height: 50px;
+			--normal-line-offset: 25px;
 
-			--ruby-line-height: 80px;
-			--ruby-line-offset: 30px;
+			--line-height: var(--normal-line-height);
+			--line-offset: var(--normal-line-offset);
 		}
 
 		html,
@@ -398,19 +416,19 @@
 		let chapter = (language) => book(language).chapters[chapterSelect.value];
 		let verse = (language) => chapter(language).verses[verseSelect.value];
 
-		language1Select.value = localStorage.getItem("language1") ?? language1Select.options[0].value;
-		language2Select.value = localStorage.getItem("language2") ?? language2Select.options[0].value;
+		language1Select.value = getData("language1") ?? language1Select.options[0].value;
+		language2Select.value = getData("language2") ?? language2Select.options[0].value;
 
 		fetchBooks();
-		bookSelect.value = localStorage.getItem("book") ?? bookSelect.options[0].value;
+		bookSelect.value = getData("book") ?? bookSelect.options[0].value;
 
 		fetchChapters();
-		chapterSelect.value = localStorage.getItem("chapter") ?? chapterSelect.options[0].value;
+		chapterSelect.value = getData("chapter") ?? chapterSelect.options[0].value;
 
 		fetchVerses();
-		verseSelect.value = localStorage.getItem("verse") ?? verseSelect.options[0].value;
+		verseSelect.value = getData("verse") ?? verseSelect.options[0].value;
 
-		let bookmarks = JSON.parse(localStorage.getItem("bookmarks") ?? "[]");
+		let bookmarks = JSON.parse(getData("bookmarks") ?? "[]");
 		fetchBookmarks();
 
 		updateVerse();
@@ -427,8 +445,8 @@
 		});
 
 		function languageSelected() {
-			localStorage.setItem("language1", language1Select.value);
-			localStorage.setItem("language2", language2Select.value);
+			saveData("language1", language1Select.value);
+			saveData("language2", language2Select.value);
 
 			for (optGroup of bookSelect.querySelectorAll("optgroup")) {
 				optGroup.label = language1().collections[optGroup.dataset.collectionTag].name;
@@ -460,9 +478,9 @@
 		}
 
 		function updateVerse() {
-			localStorage.setItem("verse", verseSelect.value);
-			localStorage.setItem("chapter", chapterSelect.value);
-			localStorage.setItem("book", bookSelect.value);
+			saveData("verse", verseSelect.value);
+			saveData("chapter", chapterSelect.value);
+			saveData("book", bookSelect.value);
 
 			let verse1 = verse(language1());
 			let verse2 = verse(language2());
@@ -470,9 +488,12 @@
 			verseL1.innerHTML = verse1;
 			verseL2.innerHTML = verse2;
 
-			if (verseL1.querySelector("ruby") !== null) {
-				document.body.style.setProperty("--line-height", "var(--ruby-line-height)");
-				document.body.style.setProperty("--line-offset", "var(--ruby-line-offset)");
+			// For Japanese.
+			let verse1HasRuby = verseL1.querySelector("ruby") !== null;
+			let verse2HasRuby = verseL2.querySelector("ruby") !== null;
+			if (verse1HasRuby || verse2HasRuby) {
+				document.body.style.setProperty("--line-height", `calc(var(--normal-line-height) * ${1 + (verse1HasRuby + verse2HasRuby) * 0.75})`);
+				document.body.style.setProperty("--line-offset", `calc(var(--line-height) * ${0.5 + (verse2HasRuby - verse1HasRuby) * 0.1})`);
 			} else {
 				document.body.style.removeProperty("--line-height");
 				document.body.style.removeProperty("--line-offset");
@@ -645,7 +666,7 @@
 			bookmark.chapter = chapterSelect.value;
 			bookmark.verse = verseSelect.value;
 
-			localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+			saveData("bookmarks", JSON.stringify(bookmarks));
 
 			closeBookmarkPage();
 		}
@@ -666,14 +687,14 @@
 			bookmarks.push(bookmark);
 			fetchBookmarks();
 
-			localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+			saveData("bookmarks", JSON.stringify(bookmarks));
 		}
 
 		function deleteBookmark(index) {
 			bookmarks.splice(index, 1);
 			fetchBookmarks();
 
-			localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+			saveData("bookmarks", JSON.stringify(bookmarks));
 		}
 	</script>
 </body>
