@@ -352,8 +352,8 @@
 
 		<div id="bottom-button-container">
 			<button style="flex: 1;" class="emoji-shadow" onclick="openBookmarkPage();">🔖</button>
-			<button style="flex: 1;" class="emoji-shadow" onclick="previousVerse();">←</button>
-			<button style="flex: 10;" class="emoji-shadow" onclick="nextVerse();">→</button>
+			<button style="flex: 1;" class="emoji-shadow" id="next-verse-button" onclick="previousVerse();">←</button>
+			<button style="flex: 10;" class="emoji-shadow" id="previous-verse-button" onclick="nextVerse();">→</button>
 			<button style="flex: 1;" class="emoji-shadow" onclick="nextBackgroundColorSet();">💡</button>
 			<button style="flex: 1;" class="emoji-shadow" onclick="nextAccentColorSet();">🎨</button>
 		</div>
@@ -453,21 +453,41 @@
 			touchStartY = touch.clientY;
 		};
 
+		let noSelectTimeoutId = null;
 		verseContainer.ontouchend = (event) => {
 			let touchEndTime = new Date().getTime();
 			let duration = touchEndTime - touchStartTime;
+
+			const MAX_SHORT_TAP_MS = 225;
+			if (duration > MAX_SHORT_TAP_MS) {
+				return;
+			}
 
 			let touch = event.changedTouches[0];
 			let touchEndY = touch.clientY;
 
 			let distance = Math.abs(touchStartY - touchEndY);
-
-			const MAX_SHORT_TAP_MS = 225;
 			const MAX_SHORT_TAP_DISTANCE = 8;
-			if (duration < MAX_SHORT_TAP_MS && distance < MAX_SHORT_TAP_DISTANCE) {
-				// Allow short tapping on the verse container to go to the next verse.
-				nextVerse();
+			if (distance > MAX_SHORT_TAP_DISTANCE) {
+				return;
 			}
+
+			let isTextSelected = Boolean(getSelection().toString());
+			if (isTextSelected) {
+				return;
+			}
+
+			// Allow short tapping on the verse container to go to the next/previous verse.
+			verseL1.style.userSelect = "none";
+			if (touch.clientX > innerWidth / 2) {
+				nextVerse();
+			} else {
+				previousVerse();
+			}
+
+			// In case the user spam taps, we want to keep postponing re-enabling selection.
+			clearTimeout(noSelectTimeoutId);
+			noSelectTimeoutId = setTimeout(() => verseL1.style.userSelect = "", 200);
 		};
 
 
