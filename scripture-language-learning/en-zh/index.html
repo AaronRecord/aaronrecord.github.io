@@ -246,17 +246,17 @@
 			width: 100%;
 		}
 
-		.verse-page {
+		#verse-page {
 			display: flex;
 			flex-flow: column;
 		}
 
-		.bottom-button-container {
+		#bottom-button-container {
 			display: flex;
 			z-index: 2;
 		}
 
-		.verse-container {
+		#verse-container {
 			overflow: auto;
 			padding: 0px 25px 25px 25px;
 			flex: 1 1 auto;
@@ -264,7 +264,7 @@
 			overflow-wrap: anywhere;
 		}
 
-		.verse-container>* {
+		#verse-container>* {
 			grid-column-start: 1;
 			grid-row-start: 1;
 
@@ -274,19 +274,19 @@
 			line-height: var(--line-height);
 		}
 
-		.versel1 {
+		#verse-l1 {
 			color: var(--verse-l1-color);
 			z-index: 1;
 		}
 
-		.versel2 {
+		#verse-l2 {
 			transform: translateY(var(--line-offset));
 			color: var(--verse-l2-color);
 			font-style: italic;
 			user-select: none;
 		}
 
-		.navigator {
+		#navigator {
 			padding: 3px;
 			flex: 0 1 auto;
 			position: sticky;
@@ -296,14 +296,14 @@
 			z-index: 2;
 		}
 
-		.bookmark-page {
+		#bookmark-page {
 			background-color: var(--background-color);
 			position: absolute;
 			display: flex;
 			flex-direction: column;
 		}
 
-		.bookmark-scroll {
+		#bookmark-scroll {
 			flex: 1;
 			display: flex;
 			flex-direction: column;
@@ -323,8 +323,8 @@
 </head>
 
 <body>
-	<div class="verse-page" id="verse-page">
-		<div class="navigator">
+	<div id="verse-page">
+		<div id="navigator">
 			<div style="display:flex; align-items: center;">
 				<select style="flex-grow: 1" id="language1-select" onchange="languageSelected()">
 				</select>
@@ -345,12 +345,12 @@
 			</div>
 		</div>
 
-		<div class="verse-container">
-			<p id="verse-l1" class="versel1">...</p>
-			<p id="verse-l2" class="versel2">...</p>
+		<div id="verse-container">
+			<p id="verse-l1">...</p>
+			<p id="verse-l2">...</p>
 		</div>
 
-		<div class="bottom-button-container">
+		<div id="bottom-button-container">
 			<button style="flex: 1;" class="emoji-shadow" onclick="openBookmarkPage();">🔖</button>
 			<button style="flex: 1;" class="emoji-shadow" onclick="previousVerse();">←</button>
 			<button style="flex: 10;" class="emoji-shadow" onclick="nextVerse();">→</button>
@@ -359,8 +359,8 @@
 		</div>
 	</div>
 
-	<div class="bookmark-page" , style="visibility: hidden;" , id="bookmark-page">
-		<div class="bookmark-scroll" id="bookmark-scroll">
+	<div style="visibility: hidden;" id="bookmark-page">
+		<div id="bookmark-scroll">
 
 		</div>
 		<div style="display: flex;">
@@ -389,11 +389,13 @@
 		let verseSelect = document.getElementById("verse-select");
 		let verseL1 = document.getElementById("verse-l1");
 		let verseL2 = document.getElementById("verse-l2");
+		let verseContainer = document.getElementById("verse-container");
 
 		let bookmarkPage = document.getElementById("bookmark-page");
 		let bookmarkScroll = document.getElementById("bookmark-scroll");
-		let newBookmarkName = document.getElementById("new-bookmark-name");
 		let addBookmarkButton = document.getElementById("add-bookmark-button");
+		let newBookmarkName = document.getElementById("new-bookmark-name");
+
 		newBookmarkName.addEventListener("keypress", function (event) {
 			if (event.key === "Enter") {
 				addBookmark();
@@ -441,6 +443,33 @@
 					break;
 			}
 		});
+
+
+		let touchStartTime, touchStartY;
+		verseContainer.ontouchstart = (event) => {
+			touchStartTime = new Date().getTime();
+
+			let touch = event.touches[0];
+			touchStartY = touch.clientY;
+		};
+
+		verseContainer.ontouchend = (event) => {
+			let touchEndTime = new Date().getTime();
+			let duration = touchEndTime - touchStartTime;
+
+			let touch = event.changedTouches[0];
+			let touchEndY = touch.clientY;
+
+			let distance = Math.abs(touchStartY - touchEndY);
+
+			const MAX_SHORT_TAP_MS = 225;
+			const MAX_SHORT_TAP_DISTANCE = 8;
+			if (duration < MAX_SHORT_TAP_MS && distance < MAX_SHORT_TAP_DISTANCE) {
+				// Allow short tapping on the verse container to go to the next verse.
+				nextVerse();
+			}
+		};
+
 
 		function languageSelected() {
 			saveData("language1", language1Select.value);
