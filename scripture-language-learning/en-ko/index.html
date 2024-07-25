@@ -560,6 +560,8 @@
 			while (verseL2.offsetHeight > verseL1.offsetHeight) {
 				verseL2.style.fontSize = (parseFloat(getComputedStyle(verseL2).fontSize) - (10.0 / wordCount)) + "px";
 			}
+
+			verseContainer.scrollTop = 0;
 		}
 
 		function fetchChapters() {
