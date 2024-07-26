@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+
+<head>
+	<title>Scripture Language Learning</title>
+	<meta name="description" content="Learn languages by reading the scriptures in two languages side by side.">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta charset="utf-8">
+
+	<link rel="icon"
+		href="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSItMi40IC0yLjQgMjguODAgMjguODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgaWQ9IlNWR1JlcG9fYmdDYXJyaWVyIiBzdHJva2Utd2lkdGg9IjAiPjxyZWN0IHg9Ii0yLjQiIHk9Ii0yLjQiIHdpZHRoPSIyOC44MCIgaGVpZ2h0PSIyOC44MCIgcng9IjE0LjQiIGZpbGw9IiM1MjY4MjkiIHN0cm9rZXdpZHRoPSIwIj48L3JlY3Q+PC9nPjxnIGlkPSJTVkdSZXBvX3RyYWNlckNhcnJpZXIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PC9nPjxnIGlkPSJTVkdSZXBvX2ljb25DYXJyaWVyIj4gPHBhdGggZD0iTTIwLjU4IDE5LjM3TDE3LjU5IDExLjAxQzE3LjM4IDEwLjQ2IDE2LjkxIDEwLjEyIDE2LjM3IDEwLjEyQzE1LjgzIDEwLjEyIDE1LjM3IDEwLjQ2IDE1LjE0IDExLjAzTDEyLjE2IDE5LjM3QzEyLjAyIDE5Ljc2IDEyLjIyIDIwLjE5IDEyLjYxIDIwLjMzQzEzIDIwLjQ3IDEzLjQzIDIwLjI3IDEzLjU3IDE5Ljg4TDE0LjE5IDE4LjE1SDE4LjU0TDE5LjE2IDE5Ljg4QzE5LjI3IDIwLjE5IDE5LjU2IDIwLjM4IDE5Ljg3IDIwLjM4QzE5Ljk1IDIwLjM4IDIwLjA0IDIwLjM3IDIwLjEyIDIwLjM0QzIwLjUxIDIwLjIgMjAuNzEgMTkuNzcgMjAuNTcgMTkuMzhMMjAuNTggMTkuMzdaTTE0Ljc0IDE2LjY0TDE2LjM4IDEyLjA1TDE4LjAyIDE2LjY0SDE0Ljc0Wk0xMi4xOSA3Ljg1QzkuOTI5OTkgMTEuNDIgNy44OSAxMy41OCA1LjQxIDE1LjAyQzUuMjkgMTUuMDkgNS4xNiAxNS4xMiA1LjA0IDE1LjEyQzQuNzggMTUuMTIgNC41MyAxNC45OSA0LjM5IDE0Ljc1QzQuMTggMTQuMzkgNC4zIDEzLjkzIDQuNjYgMTMuNzNDNi43NTk5OSAxMi41MSA4LjQ4IDEwLjc2IDEwLjQxIDcuODZINC4xMkMzLjcxIDcuODYgMy4zNyA3LjUyIDMuMzcgNy4xMUMzLjM3IDYuNyAzLjcxIDYuMzYgNC4xMiA2LjM2SDcuODdWNC4zOEM3Ljg3IDMuOTcgOC4yMSAzLjYzIDguNjIgMy42M0M5LjAyOTk5IDMuNjMgOS4zNyAzLjk3IDkuMzcgNC4zOFY2LjM2SDEzLjEyQzEzLjUzIDYuMzYgMTMuODcgNi43IDEzLjg3IDcuMTFDMTMuODcgNy41MiAxMy41MyA3Ljg2IDEzLjEyIDcuODZIMTIuMThMMTIuMTkgNy44NVpNMTIuMjMgMTUuMTJDMTIuMSAxNS4xMiAxMS45NyAxNS4wOSAxMS44NSAxNS4wMkMxMS4yIDE0LjY0IDEwLjU3IDE0LjIyIDkuOTc5OTkgMTMuNzhDOS42NDk5OSAxMy41MyA5LjU4IDEzLjA2IDkuODMgMTIuNzNDMTAuMDggMTIuNCAxMC41NSAxMi4zMyAxMC44OCAxMi41OEMxMS40MiAxMi45OSAxMi4wMSAxMy4zNyAxMi42MSAxMy43MkMxMi45NyAxMy45MyAxMy4wOSAxNC4zOSAxMi44OCAxNC43NUMxMi43NCAxNC45OSAxMi40OSAxNS4xMiAxMi4yMyAxNS4xMloiIGZpbGw9IiNGRkZGRkYiPjwvcGF0aD4gPC9nPjwvc3ZnPg==">
+
+	<script>
+		const LOCAL_STORAGE_ID = location.pathname;
+		function getData(key) {
+			return localStorage.getItem(`${LOCAL_STORAGE_ID}/${key}`);
+		}
+
+		function saveData(key, value) {
+			localStorage.setItem(`${LOCAL_STORAGE_ID}/${key}`, value);
+		}
+
+		function clearData() {
+			for (i = 0; i < localStorage.length; i++) {
+				key = localStorage.key(i);
+				if (localStorage.getItem(key).startsWith(LOCAL_STORAGE_ID)) {
+					localStorage.removeItem(key);
+				}
+			}
+		}
+
+		const VERSION = "1";
+		if ((getData("version") ?? "") !== VERSION) {
+			clearData();
+		}
+		saveData("version", VERSION);
+
+		const BACKGROUND_COLOR_SETS = [
+			{
+				// Sepia
+				"--background-color": "40, 72, 94",
+				"--verse-l1-color": "0, 0, 0",
+				"--verse-l2-color": "31, 45, 65",
+			},
+			{
+				// Dark
+				"--background-color": "0, 0, 0",
+				"--verse-l1-color": "0, 0, 100",
+				"--verse-l2-color": "0, 0, 40",
+			},
+			{
+				// Light
+				"--background-color": "0, 0, 100",
+				"--verse-l1-color": "0, 0, 0",
+				"--verse-l2-color": "0, 0, 70",
+			},
+		];
+
+		const ACCENT_COLOR_SET = [
+			{
+				// Olive
+				"--accent-color": "81, 43, 36",
+				"--dark-accent-color": "81, 43, 21",
+				"--button-text-color": "0, 0, 85",
+			},
+			{
+				// Celadon
+				"--accent-color": "119, 27, 69",
+				"--dark-accent-color": "119, 27, 54",
+				"--button-text-color": "0, 0, 100",
+			},
+			{
+				// Sea
+				"--accent-color": "208, 62, 41",
+				"--dark-accent-color": "208, 62, 26",
+				"--button-text-color": "0, 0, 85",
+			},
+			{
+				// Polynesian blue
+				"--accent-color": "214, 61, 31",
+				"--dark-accent-color": "214, 61, 21",
+				"--button-text-color": "0, 0, 85",
+			},
+			{
+				// Mardi Gras
+				"--accent-color": "297, 68, 31",
+				"--dark-accent-color": "297, 68, 16",
+				"--button-text-color": "0, 0, 85",
+			},
+			{
+				// Indigo
+				"--accent-color": "220, 70, 17",
+				"--dark-accent-color": "220, 70, 10",
+				"--button-text-color": "0, 0, 85",
+			},
+			{
+				// Vermilion
+				"--accent-color": "1, 100, 61",
+				"--dark-accent-color": "1, 70, 47",
+				"--button-text-color": "0, 0, 90",
+			},
+			{
+				// Cerise
+				"--accent-color": "343, 75, 57",
+				"--dark-accent-color": "343, 75, 42",
+				"--button-text-color": "0, 0, 85",
+			},
+			{
+				// Pumpkin
+				"--accent-color": "23, 100, 63",
+				"--dark-accent-color": "23, 100, 53",
+				"--button-text-color": "0, 0, 90",
+			},
+			{
+				// Maize
+				"--accent-color": "54, 100, 73",
+				"--dark-accent-color": "54, 80, 65",
+				"--button-text-color": "31, 45, 20",
+			},
+			{
+				// Black
+				"--accent-color": "0, 0, 10",
+				"--dark-accent-color": "0, 0, 0",
+				"--button-text-color": "0, 0, 85",
+			},
+			{
+				// White
+				"--accent-color": "0, 0, 85",
+				"--dark-accent-color": "0, 0, 75",
+				"--button-text-color": "0, 0, 10",
+			},
+			{
+				// Sepia
+				"--accent-color": "31, 45, 90",
+				"--dark-accent-color": "31, 45, 80",
+				"--button-text-color": "0, 0, 10",
+			},
+		];
+
+		let backgroundColorSetIndex = parseInt(getData("backgroundColorSetIndex") ?? "0");
+		let accentColorSetIndex = parseInt(getData("accentColorSetIndex") ?? "0");
+		applyTheme();
+
+		function nextBackgroundColorSet() {
+			if (backgroundColorSetIndex + 1 >= BACKGROUND_COLOR_SETS.length) {
+				backgroundColorSetIndex = 0;
+			} else {
+				backgroundColorSetIndex++;
+			}
+			saveData("backgroundColorSetIndex", backgroundColorSetIndex.toString());
+
+			applyTheme();
+		}
+
+		function nextAccentColorSet() {
+			if (accentColorSetIndex + 1 >= ACCENT_COLOR_SET.length) {
+				accentColorSetIndex = 0;
+			} else {
+				accentColorSetIndex++;
+			}
+			saveData("accentColorSetIndex", accentColorSetIndex.toString());
+
+			applyTheme();
+		}
+
+		function applyTheme() {
+			function toCssHsl(color) {
+				let hsl = color.split(',');
+				return `hsl(${hsl[0]}, ${hsl[1]}%, ${hsl[2]}%)`;
+			}
+
+			let backgroundColorSet = BACKGROUND_COLOR_SETS[backgroundColorSetIndex];
+			let accentColorSet = ACCENT_COLOR_SET[accentColorSetIndex];
+
+			const root = document.querySelector(':root');
+			for (const [property, value] of Object.entries(backgroundColorSet)) {
+				root.style.setProperty(property, toCssHsl(value));
+			}
+			for (const [property, value] of Object.entries(accentColorSet)) {
+				root.style.setProperty(property, toCssHsl(value));
+			}
+		}
+	</script>
+	<style>
+		:root {
+			--normal-line-height: 50px;
+			--normal-line-offset: 25px;
+
+			--line-height: var(--normal-line-height);
+			--line-offset: var(--normal-line-offset);
+		}
+
+		* {
+			outline: none;
+			border: none;
+			font-family: Georgia, 'Times New Roman', Times, serif;
+		}
+
+		div {
+			gap: 3px;
+		}
+
+		select,
+		option {
+			background: var(--dark-accent-color);
+			color: var(--button-text-color);
+			border: 0;
+			padding: 1px;
+			margin: 2px;
+		}
+
+		button {
+			background-color: var(--accent-color);
+			color: var(--button-text-color);
+			cursor: pointer;
+			font-size: 20px;
+			height: 50px;
+			margin: 0;
+			font-weight: bold;
+		}
+
+		button:hover {
+			background-color: var(--dark-accent-color);
+		}
+
+		input {
+			padding: 0 15px;
+			font-size: 20px;
+		}
+
+		html,
+		body {
+			margin: 0;
+			padding: 0;
+			display: grid;
+			background: var(--background-color);
+			max-height: 100dvh;
+			min-height: 100dvh;
+			width: 100%;
+		}
+
+		body>* {
+			grid-column-start: 1;
+			grid-row-start: 1;
+			max-height: 100dvh;
+			min-height: 100dvh;
+			width: 100%;
+		}
+
+		#verse-page {
+			display: flex;
+			flex-flow: column;
+		}
+
+		#bottom-button-container {
+			display: flex;
+			z-index: 2;
+		}
+
+		#verse-container {
+			overflow: auto;
+			padding: 0px 25px 25px 25px;
+			flex: 1 1 auto;
+			display: grid;
+			overflow-wrap: anywhere;
+		}
+
+		#verse-container>* {
+			grid-column-start: 1;
+			grid-row-start: 1;
+
+			font-size: 1em;
+			height: min-content;
+			margin: 0;
+			line-height: var(--line-height);
+		}
+
+		#verse-l1 {
+			color: var(--verse-l1-color);
+			z-index: 1;
+		}
+
+		#verse-l2 {
+			transform: translateY(var(--line-offset));
+			color: var(--verse-l2-color);
+			font-style: italic;
+			user-select: none;
+		}
+
+		#navigator {
+			padding: 3px;
+			flex: 0 1 auto;
+			position: sticky;
+			top: 0;
+			background-color: var(--accent-color);
+			color: var(--button-text-color);
+			z-index: 2;
+		}
+
+		#bookmark-page {
+			background-color: var(--background-color);
+			position: absolute;
+			display: flex;
+			flex-direction: column;
+		}
+
+		#bookmark-scroll {
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+			overflow: auto;
+		}
+
+		.bookmark-button {
+			overflow: auto;
+			white-space: nowrap;
+			text-align: left;
+		}
+
+		.emoji-shadow {
+			text-shadow: 0px 0px 3px black;
+		}
+
+		.bookmark {
+			display: flex;
+			align-items: center;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="verse-page">
+		<div id="navigator">
+			<div style="display:flex; align-items: center;">
+				<select style="flex-grow: 1" id="language1-select" onchange="languageSelected()"></select>
+				<label style="margin: 0px 5px;">→</label>
+				<select style="flex-grow: 1" id="language2-select" onchange="languageSelected()"></select>
+			</div>
+			<div style="display:flex;">
+				<div style="overflow: hidden; flex: 1 1 auto; min-width: 33%;">
+					<select style="width: 100%" id="book-select" onchange="bookSelected()"></select>
+				</div>
+				<div style="overflow: hidden; flex: 1 1 auto; min-width: 10%;">
+					<select style="width: 100%" id="chapter-select" onchange="chapterSelected()"></select>
+				</div>
+				<div style="overflow: hidden; flex: 1 1 auto; min-width: 10%">
+					<select style="width: 100%" id="verse-select" onchange="updateVerse()"></select>
+				</div>
+			</div>
+		</div>
+
+		<div id="verse-container">
+			<p id="verse-l1">...</p>
+			<p id="verse-l2">...</p>
+		</div>
+
+		<div id="bottom-button-container">
+			<button style="flex: 1;" class="emoji-shadow" id="open-bookmark-page-button"
+				onclick="openBookmarkPage()">🔖</button>
+			<button style="flex: 1;" class="emoji-shadow" id="previous-verse-button"
+				onclick="previousVerse()">←</button>
+			<button style=" flex: 10;" class="emoji-shadow" id="next-verse-button" onclick="nextVerse()">→</button>
+			<button style=" flex: 1;" class="emoji-shadow" id="next-background-color-set-button"
+				onclick="nextBackgroundColorSet()">💡</button>
+			<button style=" flex: 1;" class="emoji-shadow" id="next-accent-color-set-button"
+				onclick="nextAccentColorSet()">🎨</button>
+		</div>
+	</div>
+
+	<div style=" visibility: hidden;" id="bookmark-page">
+		<div id="bookmark-scroll">
+
+		</div>
+		<div style="display: flex;">
+			<input id="new-bookmark-name" style="flex: 10" placeholder="Bookmark name..." />
+			<button id="add-bookmark-button" style="flex: 1;" class="emoji-shadow">+</button>
+		</div>
+		<button id="close-bookmark-page-button" class="emoji-shadow" onclick="closeBookmarkPage()">←</button>
+	</div>
+
+	<script src="language_names.js"></script>
+	<script>
+		let languages = {};
+
+		async function getLanguage(language) {
+			let l = languages[language];
+
+			if (!l) {
+				l = await loadLanguage(language);
+			}
+
+			return l;
+		}
+
+		async function loadLanguage(language) {
+			languages[language] = await fetch(`./languages/${language}.json`).then(response => response.json());
+			return languages[language];
+		}
+	</script>
+
+	<script type="module">
+		window.languageSelected = languageSelected;
+		window.bookSelected = bookSelected;
+		window.chapterSelected = chapterSelected;
+		window.updateVerse = updateVerse;
+		window.addBookmark = addBookmark;
+		window.openBookmarkPage = openBookmarkPage;
+		window.closeBookmarkPage = closeBookmarkPage;
+		window.nextVerse = nextVerse;
+		window.previousVerse = previousVerse;
+		window.nextAccentColorSet = nextAccentColorSet;
+		window.nextBackgroundColorSet = nextBackgroundColorSet;
+		window.updateBookmark = updateBookmark;
+		window.openBookmark = openBookmark;
+		window.deleteBookmark = deleteBookmark;
+
+		let language1Select = document.getElementById("language1-select");
+		let language2Select = document.getElementById("language2-select");
+
+		for (const [languageTag, languageName] of Object.entries(LANGUAGE_NAMES)) {
+			language2Select.innerHTML += `<option value="${languageTag}">${languageName}</option>\n`;
+		}
+		for (const [languageTag, languageName] of Object.entries(LANGUAGE_NAMES).reverse()) {
+			language1Select.innerHTML += `<option value="${languageTag}">${languageName}</option>\n`;
+		}
+
+		let versePage = document.getElementById("verse-page");
+		let bookSelect = document.getElementById("book-select");
+		let chapterSelect = document.getElementById("chapter-select");
+		let verseSelect = document.getElementById("verse-select");
+		let verseL1 = document.getElementById("verse-l1");
+		let verseL2 = document.getElementById("verse-l2");
+		let verseContainer = document.getElementById("verse-container");
+
+		let bookmarkPage = document.getElementById("bookmark-page");
+		let bookmarkScroll = document.getElementById("bookmark-scroll");
+		let newBookmarkName = document.getElementById("new-bookmark-name");
+
+		newBookmarkName.addEventListener("keypress", function (event) {
+			if (event.key === "Enter") {
+				addBookmark();
+			}
+		});
+
+		function book(language) {
+			let split = bookSelect.value.split('.');
+			let collection = split[0];
+			let book = split[1];
+
+			return language.collections[collection].books[book];
+		}
+
+		let chapter = (language) => book(language).chapters[chapterSelect.value];
+		let verse = (language) => chapter(language).verses[verseSelect.value];
+
+		language1Select.value = getData("language1") ?? language1Select.options[0].value;
+		language2Select.value = getData("language2") ?? language2Select.options[0].value;
+		let language1 = await getLanguage(language1Select.value);
+		let language2 = await getLanguage(language2Select.value);
+
+		fetchBooks();
+		bookSelect.value = getData("book") ?? bookSelect.options[0].value;
+
+		fetchChapters();
+		chapterSelect.value = getData("chapter") ?? chapterSelect.options[0].value;
+
+		fetchVerses();
+		verseSelect.value = getData("verse") ?? verseSelect.options[0].value;
+
+		let bookmarks = JSON.parse(getData("bookmarks") ?? "[]");
+		fetchBookmarks();
+
+		updateVerse();
+
+		addEventListener("keydown", (event) => {
+			switch (event.code) {
+				case "ArrowLeft":
+					previousVerse();
+					break;
+				case "ArrowRight":
+					nextVerse();
+					break;
+			}
+		});
+
+
+		let touchStartTime, touchStartY;
+		verseContainer.ontouchstart = (event) => {
+			touchStartTime = new Date().getTime();
+
+			let touch = event.touches[0];
+			touchStartY = touch.clientY;
+		};
+
+		let noSelectTimeoutId = null;
+		verseContainer.ontouchend = (event) => {
+			let touchEndTime = new Date().getTime();
+			let duration = touchEndTime - touchStartTime;
+
+			const MAX_SHORT_TAP_MS = 225;
+			if (duration > MAX_SHORT_TAP_MS) {
+				return;
+			}
+
+			let touch = event.changedTouches[0];
+			let touchEndY = touch.clientY;
+
+			let distance = Math.abs(touchStartY - touchEndY);
+			const MAX_SHORT_TAP_DISTANCE = 8;
+			if (distance > MAX_SHORT_TAP_DISTANCE) {
+				return;
+			}
+
+			let isTextSelected = Boolean(getSelection().toString());
+			if (isTextSelected) {
+				return;
+			}
+
+			// Allow short tapping on the verse container to go to the next/previous verse.
+			verseL1.style.userSelect = "none";
+			if (touch.clientX > innerWidth / 2) {
+				nextVerse();
+			} else {
+				previousVerse();
+			}
+
+			// In case the user spam taps, we want to keep postponing re-enabling selection.
+			clearTimeout(noSelectTimeoutId);
+			noSelectTimeoutId = setTimeout(() => verseL1.style.userSelect = "", 200);
+		};
+
+		async function languageSelected() {
+			saveData("language1", language1Select.value);
+			saveData("language2", language2Select.value);
+
+			language1 = await getLanguage(language1Select.value);
+			language2 = await getLanguage(language2Select.value);
+
+			for (const optGroup of bookSelect.querySelectorAll("optgroup")) {
+				optGroup.label = language1.collections[optGroup.dataset.collectionTag].name;
+			}
+
+			for (const option of bookSelect.querySelectorAll("option")) {
+				let split = option.value.split('.');
+				let collection = split[0];
+				let book = split[1];
+
+				option.innerText = language1.collections[collection].books[book].name;
+			}
+
+			for (const option of chapterSelect.querySelectorAll("option")) {
+				option.innerText = book(language1).chapters[option.value].name;
+			}
+
+			updateVerse();
+		}
+
+		function bookSelected() {
+			fetchChapters();
+			chapterSelected();
+		}
+
+		function chapterSelected() {
+			fetchVerses();
+			updateVerse();
+		}
+
+		function updateVerse() {
+			saveData("verse", verseSelect.value);
+			saveData("chapter", chapterSelect.value);
+			saveData("book", bookSelect.value);
+
+			let verse1 = verse(language1);
+			let verse2 = verse(language2);
+
+			verseL1.innerHTML = verse1;
+			verseL2.innerHTML = verse2;
+
+			verseL1.setAttribute("lang", language1Select.value);
+			verseL2.setAttribute("lang", language2Select.value);
+
+			// For Japanese.
+			let verse1HasRuby = verseL1.querySelector("ruby") !== null;
+			let verse2HasRuby = verseL2.querySelector("ruby") !== null;
+			if (verse1HasRuby || verse2HasRuby) {
+				document.body.style.setProperty("--line-height", `calc(var(--normal-line-height) * ${1 + (verse1HasRuby + verse2HasRuby) * 0.75})`);
+				document.body.style.setProperty("--line-offset", `calc(var(--line-height) * ${0.5 + (verse2HasRuby - verse1HasRuby) * 0.1})`);
+			} else {
+				document.body.style.removeProperty("--line-height");
+				document.body.style.removeProperty("--line-offset");
+			}
+
+			verseL2.style.wordSpacing = "0px";
+			verseL2.style.fontSize = "1em";
+
+			let wordCount = verse2.split(" ").length;
+			while (verseL2.offsetHeight < verseL1.offsetHeight) {
+				verseL2.style.wordSpacing = (parseFloat(getComputedStyle(verseL2).wordSpacing) + (100.0 / wordCount)) + "px";
+			}
+
+			while (verseL2.offsetHeight > verseL1.offsetHeight) {
+				verseL2.style.fontSize = (parseFloat(getComputedStyle(verseL2).fontSize) - (10.0 / wordCount)) + "px";
+			}
+
+			verseContainer.scrollTop = 0;
+		}
+
+		function fetchChapters() {
+			let content = "";
+			for (const [chapterIndex, chapter] of Object.entries(book(language1).chapters)) {
+				content += `<option value="${chapterIndex}">${chapter.name}</option>`;
+			}
+			chapterSelect.innerHTML = content;
+		}
+
+		function fetchVerses() {
+			let content = "";
+			for (let i = 0; i < chapter(language1).verses.length; i++) {
+				content += `<option value="${i}">${i + 1}</option>`;
+			}
+			verseSelect.innerHTML = content;
+		}
+
+		function fetchBooks() {
+			let content = "";
+			for (const [collectionTag, collection] of Object.entries(language1.collections)) {
+				content += `<optgroup label="${collection.name}" data-collection-tag="${collectionTag}">`;
+				for (const [bookTag, book] of Object.entries(collection.books)) {
+					content += `<option value="${collectionTag}.${bookTag}">${book.name}</option>`;
+				}
+				content += `</optgroup>`
+			}
+			bookSelect.innerHTML = content;
+		}
+
+		function nextVerse() {
+			if (verseSelect.selectedIndex + 1 >= verseSelect.options.length) {
+				nextChapter();
+				return;
+			}
+
+			verseSelect.selectedIndex += 1;
+			updateVerse();
+		}
+
+		function nextChapter() {
+			if (chapterSelect.selectedIndex + 1 >= chapterSelect.options.length) {
+				nextBook();
+				return;
+			}
+
+			chapterSelect.selectedIndex += 1;
+			fetchVerses();
+			verseSelect.selectedIndex = 0;
+			updateVerse();
+		}
+
+		function nextBook() {
+			if (bookSelect.selectedIndex + 1 >= bookSelect.options.length) {
+				bookSelect.selectedIndex = 0;
+			} else {
+				bookSelect.selectedIndex += 1;
+			}
+
+			fetchChapters();
+			chapterSelect.selectedIndex = 0;
+			fetchVerses();
+			verseSelect.selectedIndex = 0;
+			updateVerse();
+		}
+
+		function previousVerse() {
+			if (verseSelect.selectedIndex - 1 < 0) {
+				previousChapter();
+				return;
+			}
+
+			verseSelect.selectedIndex -= 1;
+			updateVerse();
+		}
+
+		function previousChapter() {
+			if (chapterSelect.selectedIndex - 1 < 0) {
+				previousBook();
+				return;
+			}
+
+			chapterSelect.selectedIndex -= 1;
+			fetchVerses();
+			verseSelect.selectedIndex = verseSelect.options.length - 1;
+			updateVerse();
+		}
+
+		function previousBook() {
+			if (bookSelect.selectedIndex - 1 < 0) {
+				bookSelect.selectedIndex = bookSelect.options.length - 1;
+			} else {
+				bookSelect.selectedIndex -= 1;
+			}
+
+			fetchChapters();
+			chapterSelect.selectedIndex = chapterSelect.options.length - 1;
+			fetchVerses();
+			verseSelect.selectedIndex = verseSelect.options.length - 1;
+			updateVerse();
+		}
+
+		function openBookmarkPage() {
+			bookmarkPage.style.visibility = "visible";
+			versePage.style.visibility = "hidden";
+		}
+
+		function closeBookmarkPage() {
+			bookmarkPage.style.visibility = "hidden";
+			versePage.style.visibility = "visible";
+		}
+
+		function fetchBookmarks() {
+			let content = "";
+
+			for (const [index, bookmark] of bookmarks.entries()) {
+				content +=
+					`<div class="bookmark">
+						<button onclick="deleteBookmark(${index})" style="flex: 1;" class="emoji-shadow">🗑️</button>
+						<button onclick="openBookmark(${index})" style="flex: 5;" class="bookmark-button"><span class="emoji-shadow">🔖</span> ${bookmark.name}</label>
+						<button onclick="updateBookmark(${index})" style="flex: 1;" class="emoji-shadow">🔄</button>
+					</div>`;
+			}
+
+			bookmarkScroll.innerHTML = content;
+		}
+
+		function openBookmark(index) {
+			let bookmark = bookmarks[index];
+
+			language1Select.value = bookmark.language1;
+			language2Select.value = bookmark.language2;
+			languageSelected();
+
+			bookSelect.value = bookmark.book;
+			bookSelected();
+
+			chapterSelect.value = bookmark.chapter;
+			chapterSelected();
+
+			verseSelect.value = bookmark.verse;
+			updateVerse();
+
+
+			closeBookmarkPage();
+		}
+
+		function updateBookmark(index) {
+			let bookmark = bookmarks[index];
+
+			bookmark.language1 = language1Select.value;
+			bookmark.language2 = language2Select.value;
+			bookmark.book = bookSelect.value;
+			bookmark.chapter = chapterSelect.value;
+			bookmark.verse = verseSelect.value;
+
+			saveData("bookmarks", JSON.stringify(bookmarks));
+
+			closeBookmarkPage();
+		}
+
+		function addBookmark() {
+			let name = newBookmarkName.value;
+			newBookmarkName.value = "";
+
+			let bookmark = {
+				"name": name,
+				"language1": language1Select.value,
+				"language2": language2Select.value,
+				"book": bookSelect.value,
+				"chapter": chapterSelect.value,
+				"verse": verseSelect.value,
+			};
+
+			bookmarks.push(bookmark);
+			fetchBookmarks();
+
+			saveData("bookmarks", JSON.stringify(bookmarks));
+		}
+
+		function deleteBookmark(index) {
+			bookmarks.splice(index, 1);
+			fetchBookmarks();
+
+			saveData("bookmarks", JSON.stringify(bookmarks));
+		}
+	</script>
+</body>

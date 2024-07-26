@@ -1,0 +1,1 @@
+const LANGUAGE_NAMES = {"en": "English", "es": "Español", "fr": "Français", "pt": "Português", "ro": "Romana", "ty": "Reo Tahiti", "ru": "Русский", "mn": "Монгол", "ja": "日本語", "zh": "简体中文 - 普通话", "ko": "한국어"};
