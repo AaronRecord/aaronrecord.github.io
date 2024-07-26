@@ -532,11 +532,19 @@
 		};
 
 		async function languageSelected() {
-			saveData("language1", language1Select.value);
-			saveData("language2", language2Select.value);
+			let selectedL1 = language1Select.value;
+			let selectedL2 = language2Select.value;
 
-			language1 = await getLanguage(language1Select.value);
-			language2 = await getLanguage(language2Select.value);
+			saveData("language1", selectedL1);
+			saveData("language2", selectedL2);
+
+			language1 = await getLanguage(selectedL1);
+			language2 = await getLanguage(selectedL2);
+
+			if (selectedL1 !== language1Select.value || selectedL2 !== language2Select.value) {
+				// The user has changed the language again while we were fetching language1 and language2.
+				return;
+			}
 
 			for (const optGroup of bookSelect.querySelectorAll("optgroup")) {
 				optGroup.label = language1.collections[optGroup.dataset.collectionTag].name;
