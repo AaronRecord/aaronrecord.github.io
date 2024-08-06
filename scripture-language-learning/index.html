@@ -170,7 +170,7 @@
 			let backgroundColorSet = BACKGROUND_COLOR_SETS[backgroundColorSetIndex];
 			let accentColorSet = ACCENT_COLOR_SET[accentColorSetIndex];
 
-			const root = document.querySelector(':root');
+			const root = document.querySelector(":root");
 			for (const [property, value] of Object.entries(backgroundColorSet)) {
 				root.style.setProperty(property, toCssHsl(value));
 			}
@@ -185,11 +185,8 @@
 	</script>
 	<style>
 		:root {
-			--normal-line-height: 50px;
-			--normal-line-offset: 25px;
-
-			--line-height: var(--normal-line-height);
-			--line-offset: var(--normal-line-offset);
+			--line-height: 50px;
+			--line-offset: calc(var(--line-height) / 2);
 		}
 
 		* {
@@ -271,7 +268,7 @@
 			grid-column-start: 1;
 			grid-row-start: 1;
 
-			font-size: 1em;
+			font-size: 16px;
 			height: min-content;
 			margin: 0;
 			line-height: var(--line-height);
@@ -542,7 +539,7 @@
 			language2 = await getLanguage(selectedL2);
 
 			if (selectedL1 !== language1Select.value || selectedL2 !== language2Select.value) {
-				// The user has changed the language again while we were fetching language1 and language2.
+				// The user has changed the language again while we were fetching language1 and language2 (this request is outdated).
 				return;
 			}
 
@@ -590,26 +587,79 @@
 			verseL2.setAttribute("lang", language2Select.value);
 
 			// For Japanese.
+
+			const NORMAL_LINE_HEIGHT = 50;
+			let lineHeight = NORMAL_LINE_HEIGHT;
+			let lineOffset = lineHeight / 2;
+
 			let verse1HasRuby = verseL1.querySelector("ruby") !== null;
 			let verse2HasRuby = verseL2.querySelector("ruby") !== null;
 			if (verse1HasRuby || verse2HasRuby) {
-				document.body.style.setProperty("--line-height", `calc(var(--normal-line-height) * ${1 + (verse1HasRuby + verse2HasRuby) * 0.75})`);
-				document.body.style.setProperty("--line-offset", `calc(var(--line-height) * ${0.5 + (verse2HasRuby - verse1HasRuby) * 0.1})`);
+				lineHeight = NORMAL_LINE_HEIGHT * (0.75 + (verse1HasRuby + verse2HasRuby) * 0.75);
+				lineOffset = lineHeight * (0.5 + (verse2HasRuby - verse1HasRuby) * 0.1);
+				verseContainer.style.setProperty("--line-height", `${lineHeight}px`);
+				verseContainer.style.setProperty("--line-offset", `${lineOffset}px`);
 			} else {
-				document.body.style.removeProperty("--line-height");
-				document.body.style.removeProperty("--line-offset");
+				verseContainer.style.removeProperty("--line-height");
+				verseContainer.style.removeProperty("--line-offset");
 			}
 
-			verseL2.style.wordSpacing = "0px";
-			verseL2.style.fontSize = "1em";
+			// Reset to defaults
+			const DEFAULT_LETTER_SPACING = 0;
+			const DEFAULT_FONT_SIZE = 16;
+			verseL2.style.letterSpacing = `${DEFAULT_LETTER_SPACING}px`;
+			verseL2.style.fontSize = `${DEFAULT_FONT_SIZE}px`;
 
-			let wordCount = verse2.split(" ").length;
-			while (verseL2.offsetHeight < verseL1.offsetHeight) {
-				verseL2.style.wordSpacing = (parseFloat(getComputedStyle(verseL2).wordSpacing) + (100.0 / wordCount)) + "px";
+			let l1End = document.createElement("span");
+			verseL1.appendChild(l1End);
+			let l2End = document.createElement("span");
+			verseL2.appendChild(l2End);
+			let l2Start = document.createElement("span");
+			verseL2.prepend(l2Start);
+
+			let x = (s) => s.getBoundingClientRect().x;
+			let y = (s) => s.getBoundingClientRect().y;
+
+			let l2Length = () => (Math.round((y(l2End) - y(l2Start)) / lineHeight)) * width + (x(l2End) - x(l2Start));
+
+			let width = verseL1.getBoundingClientRect().width;
+
+			// Positive distance means verse1 is longer than verse2.
+			let lineDifference = () => Math.round((y(l1End) - (y(l2End) - lineOffset)) / lineHeight);
+			let distance = () => lineDifference() * width + (x(l1End) - x(l2End));
+			let distanceThreshold = 50;
+
+			function adjustVerse2(propertyName, defaultValue, direction) {
+				let previousDistance = distance();
+				let value = defaultValue;
+				while (Math.abs(distance()) > distanceThreshold || lineDifference() !== 0) {
+					let ratio = distance() / l2Length();
+
+					let precision = 0.1;
+					let previousValue = value;
+					while (true) {
+						value += ratio / precision;
+						verseL2.style[propertyName] = `${value}px`;
+
+						if (direction > 0 ? lineDifference() > -1 : lineDifference() < 1) {
+							break;
+						}
+
+						// The 2nd verse has gone past the 1st.
+						value = previousValue;
+						precision *= 2;
+					}
+
+					previousDistance = distance();
+					distanceThreshold += 15;
+				}
 			}
 
-			while (verseL2.offsetHeight > verseL1.offsetHeight) {
-				verseL2.style.fontSize = (parseFloat(getComputedStyle(verseL2).fontSize) - (10.0 / wordCount)) + "px";
+			let originalDirection = Math.sign(distance());
+			if (originalDirection == 1) {
+				adjustVerse2("letterSpacing", DEFAULT_LETTER_SPACING, 1);
+			} else {
+				adjustVerse2("fontSize", DEFAULT_FONT_SIZE, -1);
 			}
 
 			verseContainer.scrollTop = 0;
