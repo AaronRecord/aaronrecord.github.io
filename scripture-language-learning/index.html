@@ -446,11 +446,11 @@
 			let collection = split[0];
 			let book = split[1];
 
-			return language.collections[collection].books[book];
+			return language.collections[collection]?.books[book];
 		}
 
-		let chapter = (language) => book(language).chapters[chapterSelect.value];
-		let verse = (language) => chapter(language).verses[verseSelect.value];
+		let chapter = (language) => book(language)?.chapters[chapterSelect.value];
+		let verse = (language) => chapter(language)?.verses[verseSelect.value];
 
 		language1Select.value = getData("language1") ?? language1Select.options[0].value;
 		language2Select.value = getData("language2") ?? language2Select.options[0].value;
@@ -543,20 +543,21 @@
 				return;
 			}
 
-			for (const optGroup of bookSelect.querySelectorAll("optgroup")) {
-				optGroup.label = language1.collections[optGroup.dataset.collectionTag].name;
-			}
+			let split = bookSelect.value.split('.');
+			let selectedCollection = split[0];
+			let selectedBook = split[1];
+			let selectedChapter = chapterSelect.value;
 
-			for (const option of bookSelect.querySelectorAll("option")) {
-				let split = option.value.split('.');
-				let collection = split[0];
-				let book = split[1];
+			fetchBooks();
+			fetchChapters();
 
-				option.innerText = language1.collections[collection].books[book].name;
-			}
-
-			for (const option of chapterSelect.querySelectorAll("option")) {
-				option.innerText = book(language1).chapters[option.value].name;
+			if (language1.collections[selectedCollection]?.books[selectedBook]?.chapters[selectedChapter] !== undefined) {
+				// Otherwise, the newly selected language does not have the selected content.
+				bookSelect.value = `${selectedCollection}.${selectedBook}`;
+				chapterSelect.value = selectedChapter;
+			} else {
+				// The other selects are already reset by replacing the innerHtml content.
+				verseSelect.selectedIndex = 0;
 			}
 
 			updateVerse();
@@ -576,12 +577,6 @@
 			saveData("verse", verseSelect.value);
 			saveData("chapter", chapterSelect.value);
 			saveData("book", bookSelect.value);
-
-			let verse1 = verse(language1);
-			let verse2 = verse(language2);
-
-			verseL1.innerHTML = verse1;
-			verseL2.innerHTML = verse2;
 
 			verseL1.setAttribute("lang", language1Select.value);
 			verseL2.setAttribute("lang", language2Select.value);
@@ -603,6 +598,21 @@
 				verseContainer.style.removeProperty("--line-height");
 				verseContainer.style.removeProperty("--line-offset");
 			}
+
+			verseContainer.scrollTop = 0;
+
+			let verse1 = verse(language1);
+			let verse2 = verse(language2);
+
+			verseL1.innerHTML = verse1;
+
+			if (verse2 === undefined) {
+				verseL2.innerHTML = "Selected content is not available in this language.";
+				return;
+			}
+			verseL2.innerHTML = verse2;
+
+			// The match line-spacing algorithm for verse 2.
 
 			// Reset to defaults
 			const DEFAULT_LETTER_SPACING = 0;
@@ -661,8 +671,6 @@
 			} else {
 				adjustVerse2("fontSize", DEFAULT_FONT_SIZE, -1);
 			}
-
-			verseContainer.scrollTop = 0;
 		}
 
 		function fetchChapters() {
