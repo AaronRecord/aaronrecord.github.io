@@ -343,7 +343,7 @@
 					<select style="width: 100%" id="chapter-select" onchange="chapterSelected()"></select>
 				</div>
 				<div style="overflow: hidden; flex: 1 1 auto; min-width: 10%">
-					<select style="width: 100%" id="verse-select" onchange="updateVerse()"></select>
+					<select style="width: 100%" id="verse-select" onchange="scheduleVerseUpdate()"></select>
 				</div>
 			</div>
 		</div>
@@ -401,7 +401,7 @@
 		window.languageSelected = languageSelected;
 		window.bookSelected = bookSelected;
 		window.chapterSelected = chapterSelected;
-		window.updateVerse = updateVerse;
+		window.scheduleVerseUpdate = scheduleVerseUpdate;
 		window.addBookmark = addBookmark;
 		window.openBookmarkPage = openBookmarkPage;
 		window.closeBookmarkPage = closeBookmarkPage;
@@ -431,9 +431,13 @@
 		let verseL2 = document.getElementById("verse-l2");
 		let verseContainer = document.getElementById("verse-container");
 
+
+		let openBookmarkPageButton = document.getElementById("open-bookmark-page-button");
 		let bookmarkPage = document.getElementById("bookmark-page");
 		let bookmarkScroll = document.getElementById("bookmark-scroll");
 		let newBookmarkName = document.getElementById("new-bookmark-name");
+
+		let verseUpdateNeeded = false;
 
 		newBookmarkName.addEventListener("keypress", function (event) {
 			if (event.key === "Enter") {
@@ -469,7 +473,7 @@
 		let bookmarks = JSON.parse(getData("bookmarks") ?? "[]");
 		fetchBookmarks();
 
-		updateVerse();
+		scheduleVerseUpdate();
 
 		addEventListener("keydown", (event) => {
 			switch (event.code) {
@@ -528,39 +532,45 @@
 			noSelectTimeoutId = setTimeout(() => verseL1.style.userSelect = "", 200);
 		};
 
-		async function languageSelected() {
+		async function getSelectedLanguages() {
 			let selectedL1 = language1Select.value;
 			let selectedL2 = language2Select.value;
 
-			saveData("language1", selectedL1);
-			saveData("language2", selectedL2);
+			// Prevent the user from changing the language again while we're fetching language1 and language2.
+			let languageChangers = [language1Select, language2Select, openBookmarkPageButton];
+			languageChangers.forEach((l) => l.disabled = true);
 
 			language1 = await getLanguage(selectedL1);
 			language2 = await getLanguage(selectedL2);
 
-			if (selectedL1 !== language1Select.value || selectedL2 !== language2Select.value) {
-				// The user has changed the language again while we were fetching language1 and language2 (this request is outdated).
-				return;
-			}
+			languageChangers.forEach((l) => l.disabled = false);
+		}
+
+		async function languageSelected() {
+			await getSelectedLanguages();
 
 			let split = bookSelect.value.split('.');
 			let selectedCollection = split[0];
 			let selectedBook = split[1];
 			let selectedChapter = chapterSelect.value;
+			let selectedVerse = verseSelect.value;
 
 			fetchBooks();
-			fetchChapters();
-
-			if (language1.collections[selectedCollection]?.books[selectedBook]?.chapters[selectedChapter] !== undefined) {
-				// Otherwise, the newly selected language does not have the selected content.
+			let hasBook = language1.collections[selectedCollection]?.books[selectedBook] !== undefined;
+			if (hasBook) {
+				// The newly selected language has the selected book.
+				// We're assuming here that if two languages have the same book, all the chapters and verses are the same.
 				bookSelect.value = `${selectedCollection}.${selectedBook}`;
+				fetchChapters();
 				chapterSelect.value = selectedChapter;
+				fetchVerses();
+				verseSelect.value = selectedVerse;
 			} else {
-				// The other selects are already reset by replacing the innerHtml content.
-				verseSelect.selectedIndex = 0;
+				fetchChapters();
+				fetchVerses();
 			}
 
-			updateVerse();
+			scheduleVerseUpdate();
 		}
 
 		function bookSelected() {
@@ -570,10 +580,21 @@
 
 		function chapterSelected() {
 			fetchVerses();
-			updateVerse();
+			scheduleVerseUpdate();
+		}
+
+		function scheduleVerseUpdate() {
+			if (!verseUpdateNeeded) {
+				verseUpdateNeeded = true;
+				requestAnimationFrame(updateVerse);
+			}
 		}
 
 		function updateVerse() {
+			verseUpdateNeeded = false;
+
+			saveData("language1", language1Select.value);
+			saveData("language2", language2Select.value);
 			saveData("verse", verseSelect.value);
 			saveData("chapter", chapterSelect.value);
 			saveData("book", bookSelect.value);
@@ -708,7 +729,7 @@
 			}
 
 			verseSelect.selectedIndex += 1;
-			updateVerse();
+			scheduleVerseUpdate();
 		}
 
 		function nextChapter() {
@@ -720,7 +741,7 @@
 			chapterSelect.selectedIndex += 1;
 			fetchVerses();
 			verseSelect.selectedIndex = 0;
-			updateVerse();
+			scheduleVerseUpdate();
 		}
 
 		function nextBook() {
@@ -734,7 +755,7 @@
 			chapterSelect.selectedIndex = 0;
 			fetchVerses();
 			verseSelect.selectedIndex = 0;
-			updateVerse();
+			scheduleVerseUpdate();
 		}
 
 		function previousVerse() {
@@ -744,7 +765,7 @@
 			}
 
 			verseSelect.selectedIndex -= 1;
-			updateVerse();
+			scheduleVerseUpdate();
 		}
 
 		function previousChapter() {
@@ -756,7 +777,7 @@
 			chapterSelect.selectedIndex -= 1;
 			fetchVerses();
 			verseSelect.selectedIndex = verseSelect.options.length - 1;
-			updateVerse();
+			scheduleVerseUpdate();
 		}
 
 		function previousBook() {
@@ -770,7 +791,7 @@
 			chapterSelect.selectedIndex = chapterSelect.options.length - 1;
 			fetchVerses();
 			verseSelect.selectedIndex = verseSelect.options.length - 1;
-			updateVerse();
+			scheduleVerseUpdate();
 		}
 
 		function openBookmarkPage() {
@@ -798,12 +819,12 @@
 			bookmarkScroll.innerHTML = content;
 		}
 
-		function openBookmark(index) {
+		async function openBookmark(index) {
 			let bookmark = bookmarks[index];
 
 			language1Select.value = bookmark.language1;
 			language2Select.value = bookmark.language2;
-			languageSelected();
+			await getSelectedLanguages();
 
 			bookSelect.value = bookmark.book;
 			bookSelected();
@@ -812,8 +833,7 @@
 			chapterSelected();
 
 			verseSelect.value = bookmark.verse;
-			updateVerse();
-
+			scheduleVerseUpdate();
 
 			closeBookmarkPage();
 		}
