@@ -602,6 +602,19 @@
 			verseL1.setAttribute("lang", language1Select.value);
 			verseL2.setAttribute("lang", language2Select.value);
 
+			verseContainer.scrollTop = 0;
+
+			let verse1 = verse(language1);
+			let verse2 = verse(language2);
+
+			verseL1.innerHTML = verse1;
+
+			if (verse2 === undefined) {
+				verseL2.innerHTML = "Selected content is not available in this language.";
+				return;
+			}
+			verseL2.innerHTML = verse2;
+
 			// For Japanese.
 
 			const NORMAL_LINE_HEIGHT = 50;
@@ -619,19 +632,6 @@
 				verseContainer.style.removeProperty("--line-height");
 				verseContainer.style.removeProperty("--line-offset");
 			}
-
-			verseContainer.scrollTop = 0;
-
-			let verse1 = verse(language1);
-			let verse2 = verse(language2);
-
-			verseL1.innerHTML = verse1;
-
-			if (verse2 === undefined) {
-				verseL2.innerHTML = "Selected content is not available in this language.";
-				return;
-			}
-			verseL2.innerHTML = verse2;
 
 			// The match line-spacing algorithm for verse 2.
 
