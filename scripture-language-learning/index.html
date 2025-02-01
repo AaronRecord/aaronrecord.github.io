@@ -377,23 +377,23 @@
 		<button id="close-bookmark-page-button" class="emoji-shadow" onclick="closeBookmarkPage()">←</button>
 	</div>
 
-	<script src="language_names.js"></script>
+	<script src="language_meta.js"></script>
 	<script>
-		let languages = {};
+		let language_contents = {};
 
 		async function getLanguage(language) {
-			let l = languages[language];
+			let language_content = language_contents[language];
 
-			if (!l) {
-				l = await loadLanguage(language);
+			if (!language_content) {
+				language_content = await loadLanguage(language);
 			}
 
-			return l;
+			return language_content;
 		}
 
 		async function loadLanguage(language) {
-			languages[language] = await fetch(`./languages/${language}.json`).then(response => response.json());
-			return languages[language];
+			language_contents[language] = await fetch(`./languages/${language}.json`).then(response => response.json());
+			return language_contents[language];
 		}
 	</script>
 
@@ -416,11 +416,11 @@
 		let language1Select = document.getElementById("language1-select");
 		let language2Select = document.getElementById("language2-select");
 
-		for (const [languageTag, languageName] of Object.entries(LANGUAGE_NAMES)) {
-			language2Select.innerHTML += `<option value="${languageTag}">${languageName}</option>\n`;
+		for (const [languageTag, languageMeta] of Object.entries(LANGUAGE_META)) {
+			language2Select.innerHTML += `<option value="${languageTag}">${languageMeta.name}</option>\n`;
 		}
-		for (const [languageTag, languageName] of Object.entries(LANGUAGE_NAMES).reverse()) {
-			language1Select.innerHTML += `<option value="${languageTag}">${languageName}</option>\n`;
+		for (const [languageTag, languageMeta] of Object.entries(LANGUAGE_META).reverse()) {
+			language1Select.innerHTML += `<option value="${languageTag}">${languageMeta.name}</option>\n`;
 		}
 
 		let versePage = document.getElementById("verse-page");
