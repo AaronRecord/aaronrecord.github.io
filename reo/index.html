@@ -466,6 +466,7 @@ function binarySearch(arr, query) {
 	}
 
 	function getResults(query) {
+		query = query.replaceAll("’", "'").replaceAll("‘", "'");
 		searchResults.scrollTop = 0;
 
 		let results = searchLexemesAllLanguages(query);
